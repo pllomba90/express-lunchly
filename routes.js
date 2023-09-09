@@ -18,6 +18,14 @@ router.get("/", async function(req, res, next) {
   }
 });
 
+router.get("/reservations", async function(req, res, next) {
+  try {
+    const reservations = await Reservation.all();
+    return res.render("reservations.html", { reservations });
+  } catch (err) {
+    return next(err);
+  }
+});
 /** Form to add a new customer. */
 
 router.get("/add/", async function(req, res, next) {

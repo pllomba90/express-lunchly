@@ -22,6 +22,21 @@ class Reservation {
     return moment(this.startAt).format('MMMM Do YYYY, h:mm a');
   }
 
+  static async all() {
+    const results = await db.query(
+      `SELECT
+      r.id,
+      r.customer_id as "customerId",
+      r.start_at as "startAt",
+      r.num_guests as "numGuests",
+      r.notes
+    FROM
+      reservations r
+      ORDER BY start_at`
+    );
+    return results.rows.map(r => new Reservation(r));
+  }
+
   /** given a customer id, find their reservations. */
 
   static async getReservationsForCustomer(customerId) {
@@ -37,6 +52,24 @@ class Reservation {
     );
 
     return results.rows.map(row => new Reservation(row));
+  }
+
+  async save() {
+    if (this.id === undefined) {
+      const result = await db.query(
+        `INSERT INTO reservations (customer_id, num_guests, start_at, notes)
+             VALUES ($1, $2, $3, $4)
+             RETURNING id`,
+        [this.customerId, this.numGuests, this.startAt, this.notes]
+      );
+      this.id = result.rows[0].id;
+    } else {
+      await db.query(
+        `UPDATE customers SET customer_id=$1, num_guests=$2, start_at=$3, notes=$4
+             WHERE id=$5`,
+        [this.customerId, this.numGuests, this.startAt, this.notes, this.id]
+      );
+    }
   }
 }
 

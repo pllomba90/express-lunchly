@@ -2,7 +2,7 @@
 
 const pg = require("pg");
 
-const db = new pg.Client("postgresql:///lunchly");
+const db = new pg.Client("postgresql://pllomba:29890@localhost:5432/lunchly");
 
 db.connect();
 

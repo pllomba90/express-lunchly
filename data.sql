@@ -13,7 +13,7 @@ CREATE TABLE customers (
 
 CREATE TABLE reservations (
     id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-    customer_id integer NOT NULL REFERENCES customers,
+    customer_id integer NOT NULL REFERENCES customers(id),
     start_at timestamp without time zone NOT NULL,
     num_guests integer NOT NULL,
     notes text DEFAULT '' NOT NULL,
