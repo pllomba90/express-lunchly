@@ -78,6 +78,21 @@ class Customer {
       );
     }
   }
+
+ async fullName(id){
+   
+    const result = await db.query(`
+    SELECT first_name,
+    last_name
+    FROM customers
+    WHERE id = $1`,
+     [this.id]);
+
+     const { first_name, last_name } = result.rows[0];
+
+     return `${first_name} ${last_name}`;
+
+  }
 }
 
 module.exports = Customer;

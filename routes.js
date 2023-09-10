@@ -12,7 +12,15 @@ const router = new express.Router();
 router.get("/", async function(req, res, next) {
   try {
     const customers = await Customer.all();
-    return res.render("customer_list.html", { customers });
+    const fullNamePromises = customers.map(customer => customer.fullName());
+
+     const fullNames = await Promise.all(fullNamePromises);
+
+     const customersWithFullNames = customers.map((customer, index) => ({
+       ...customer,
+       fullName: fullNames[index]
+     }));
+    return res.render("customer_list.html", { customers: customersWithFullNames });
   } catch (err) {
     return next(err);
   }
@@ -59,10 +67,10 @@ router.post("/add/", async function(req, res, next) {
 router.get("/:id/", async function(req, res, next) {
   try {
     const customer = await Customer.get(req.params.id);
-
+    const fullName = await customer.fullName()
     const reservations = await customer.getReservations();
 
-    return res.render("customer_detail.html", { customer, reservations });
+    return res.render("customer_detail.html", { customer, reservations, fullName });
   } catch (err) {
     return next(err);
   }
